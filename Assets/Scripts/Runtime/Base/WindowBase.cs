@@ -82,7 +82,7 @@ public class WindowBase : WindowBehaviour
         base.SetVisible(isVisible);
         // FIXME 临时代码
         this.gameObject.SetActive(isVisible);
-
+        this.Visible = isVisible;
     }
     #endregion
 

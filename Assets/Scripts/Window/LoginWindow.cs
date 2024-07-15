@@ -18,6 +18,11 @@ public class LoginWindow : WindowBase
 
     public void Test()
     {
-        Debug.Log("测试-------");
+        Debug.Log("测试1-------");
+    }
+
+    public void Test2()
+    {
+        Debug.Log("测试2-------");
     }
 }

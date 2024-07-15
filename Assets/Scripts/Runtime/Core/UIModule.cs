@@ -73,12 +73,77 @@ public class UIModule : Singleton<UIModule>
     /// </summary>
     /// <param name="windowName">窗口名称。</param>
     /// <returns>返回窗口实例，如果不存在则返回 null。</returns>
-    public WindowBase GetWindow(string windowName)
+    private WindowBase GetWindow(string windowName)
     {
         // 尝试从字典中获取窗口
         this.mAllWindowDic.TryGetValue(windowName, out var window);
         return window;
     }
+
+    /// <summary>
+    /// 获取已经弹出的窗口
+    /// </summary>
+    /// <typeparam name="T">窗口类型，必须继承自 WindowBase。</typeparam>
+    /// <returns></returns>
+    public T GetWindow<T>() where T: WindowBase
+    {
+        Type type = typeof(T);
+        string windowName = type.Name;
+        foreach (var window in this.mVisibleWindowList)
+        {
+            if(window.Name == windowName)
+            {
+                return (T)window;
+            }
+        }
+        Debug.LogError($"该窗口没有获取到：{windowName}");
+        return null;
+    }
+
+    /// <summary>
+    /// 隐藏指定名称的窗口。
+    /// </summary>
+    /// <param name="windowName">窗口名称。</param>
+    private void HideWindow(string windowName)
+    {
+        // 获取指定名称的窗口实例
+        WindowBase window = this.GetWindow(windowName);
+        // 隐藏窗口
+        this.HideWindow(window);
+    }
+
+    /// <summary>
+    /// 隐藏指定的窗口实例。
+    /// </summary>
+    /// <param name="window">窗口实例。</param>
+    private void HideWindow(WindowBase window)
+    {
+        // 检查窗口实例是否存在且当前是否可见
+        if (window != null && window.Visible)
+        {
+            // 从可见窗口列表中移除
+            this.mVisibleWindowList.Remove(window);
+            // 设置窗口不可见
+            window.SetVisible(false);
+            // 调用窗口的 OnHide 方法
+            window.OnHide();
+        }
+    }
+
+    /// <summary>
+    /// 隐藏指定类型的窗口。
+    /// </summary>
+    /// <typeparam name="T">窗口类型，必须继承自 WindowBase。</typeparam>
+    public void HideWindow<T>() where T : WindowBase
+    {
+        // 获取窗口类型
+        Type type = typeof(T);
+        // 获取窗口名称
+        string windowName = type.Name;
+        // 隐藏指定名称的窗口
+        this.HideWindow(windowName);
+    }
+
 
     /// <summary>
     /// 显示指定的窗口。
@@ -114,23 +179,24 @@ public class UIModule : Singleton<UIModule>
     /// <summary>
     /// 初始化窗口。
     /// </summary>
-    /// <typeparam name="T">窗口类型，必须继承自 WindowBase。</typeparam>
-    /// <param name="window">窗口实例。</param>
+    /// <param name="windowBase">窗口实例。</param>
     /// <param name="windowName">窗口名称。</param>
     /// <returns>返回初始化后的窗口实例。</returns>
-    private T InitializeWindow<T>(T t, string windowName) where T : WindowBase, new()
+    private WindowBase InitializeWindow(WindowBase windowBase, string windowName)
     {
         // 生成对应的窗口预制体
         GameObject goWindow = this.TempLoadWindow(windowName);
         if (goWindow != null)
         {
-            t.gameObject = goWindow;
-            t.transform = goWindow.transform;
-            t.Canvas = goWindow.GetComponent<Canvas>();
-            t.transform.SetAsLastSibling();
-            t.OnAwake();
-            t.SetVisible(true);
-            t.OnShow();
+            windowBase.gameObject = goWindow;
+            windowBase.transform = goWindow.transform;
+            windowBase.transform.SetAsLastSibling();
+            windowBase.Canvas = goWindow.GetComponent<Canvas>();
+            windowBase.Canvas.worldCamera = this.mUICamera;
+            windowBase.Name = goWindow.name;
+            windowBase.OnAwake();
+            windowBase.SetVisible(true);
+            windowBase.OnShow();
 
             // 设置窗口的 RectTransform 属性
             RectTransform rectTrans = goWindow.GetComponent<RectTransform>();
@@ -139,10 +205,10 @@ public class UIModule : Singleton<UIModule>
             rectTrans.offsetMin = Vector3.zero;
 
             // 将窗口添加到管理列表
-            this.mAllWindowDic.Add(windowName, t);
-            this.mAllWindowList.Add(t);
-            this.mVisibleWindowList.Add(t);
-            return t;
+            this.mAllWindowDic.Add(windowName, windowBase);
+            this.mAllWindowList.Add(windowBase);
+            this.mVisibleWindowList.Add(windowBase);
+            return windowBase;
         }
         Debug.LogError($"没有加载到对应的窗口，窗口名字 {windowName}");
         return null;
@@ -157,10 +223,13 @@ public class UIModule : Singleton<UIModule>
     {
         // 从资源中加载窗口预制体
         GameObject window = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>($"Window/{windowName}"));
-        // 设置窗口的父节点、缩放、位置和旋转
+        // 设置窗口的父节点、缩放、位置、旋转和名字
+        window.transform.SetParent(this.mUIRoot);
         window.transform.localScale = Vector3.one;
         window.transform.localPosition = Vector3.zero;
         window.transform.localRotation = Quaternion.identity;
+        window.name = windowName;
+
         return window;
     }
 }

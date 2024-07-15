@@ -8,6 +8,9 @@ public class ZMUIMain : MonoBehaviour
     {
         LoginWindow loginWindow = UIModule.Instance.PopUpWindow<LoginWindow>();
         loginWindow.Test();
+
+        LoginWindow getWindow = UIModule.Instance.GetWindow<LoginWindow>();
+        getWindow.Test2();
     }
     private void Update()
     {
@@ -15,6 +18,11 @@ public class ZMUIMain : MonoBehaviour
         {
             UIModule.Instance.Initialize();
             UIModule.Instance.PopUpWindow<LoginWindow>();
+        }
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            UIModule.Instance.HideWindow<LoginWindow>();
         }
     }
 }
