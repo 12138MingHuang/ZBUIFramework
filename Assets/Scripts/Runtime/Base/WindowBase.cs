@@ -76,6 +76,14 @@ public class WindowBase : WindowBehaviour
         this.mAllToggleList.Clear();
         this.mAllInputFieldList.Clear();
     }
+
+    public override void SetVisible(bool isVisible)
+    {
+        base.SetVisible(isVisible);
+        // FIXME 临时代码
+        this.gameObject.SetActive(isVisible);
+
+    }
     #endregion
 
     #region 事件管理
