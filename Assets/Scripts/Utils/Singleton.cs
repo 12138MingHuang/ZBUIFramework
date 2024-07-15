@@ -2,7 +2,7 @@
 /// Singleton 类提供一个通用的单例模式实现。
 /// 该类确保类型 T 只有一个实例，并提供一个全局访问点。
 /// </summary>
-public class Singleton<T>
+public class Singleton<T> where T : new()
 {
 
     /// <summary>
