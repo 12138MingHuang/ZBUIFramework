@@ -10,22 +10,22 @@ public abstract class WindowBehaviour
     /// <summary>
     /// 当前窗口的 GameObject。
     /// </summary>
-    protected GameObject gameObject { get; set; }
+    public GameObject gameObject { get; set; }
 
     /// <summary>
     /// 当前窗口的 Transform，代表 UI 自身。
     /// </summary>
-    protected Transform transform { get; set; }
+    public Transform transform { get; set; }
 
     /// <summary>
     /// 窗口所在的 Canvas。
     /// </summary>
-    protected Canvas Canvas { get; set; }
+    public Canvas Canvas { get; set; }
 
     /// <summary>
     /// 窗口的名称。
     /// </summary>
-    protected string Name { get; set; }
+    public string Name { get; set; }
 
     /// <summary>
     /// 窗口是否可见。
