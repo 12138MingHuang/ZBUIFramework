@@ -163,7 +163,7 @@ public class UIModule : Singleton<UIModule>
         if (window != null)
         {
             // 如果字典中存在该窗口，移除它
-            if (this.mAllWindowDic.ContainsKey(window.Name))
+            if (this.mAllWindowDic.TryGetValue(window.Name, out var windowInstance))
             {
                 this.mAllWindowDic.Remove(window.Name);
                 this.mAllWindowList.Remove(window);
@@ -173,6 +173,10 @@ public class UIModule : Singleton<UIModule>
             window.OnHide(); // 调用窗口的隐藏方法
             window.OnDestroy(); // 调用窗口的销毁方法
             GameObject.Destroy(window.gameObject); // 销毁窗口的游戏对象
+
+            // 清理引用，帮助垃圾回收
+            window = null;
+            System.GC.Collect();
         }
     }
 
