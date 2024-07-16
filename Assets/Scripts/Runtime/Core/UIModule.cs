@@ -144,6 +144,67 @@ public class UIModule : Singleton<UIModule>
         this.HideWindow(windowName);
     }
 
+    /// <summary>
+    /// 私有方法：销毁指定名称的窗口。
+    /// </summary>
+    /// <param name="windowName">窗口名称。</param>
+    private void DestroyWindow(string windowName)
+    {
+        WindowBase windowBase = this.GetWindow(windowName);
+        this.DestroyWindow(windowBase);
+    }
+
+    /// <summary>
+    /// 私有方法：销毁指定名称的窗口。
+    /// </summary>
+    /// <param name="windowName">窗口名称。</param>
+    private void DestroyWindow(WindowBase window)
+    {
+        if (window != null)
+        {
+            // 如果字典中存在该窗口，移除它
+            if (this.mAllWindowDic.ContainsKey(window.Name))
+            {
+                this.mAllWindowDic.Remove(window.Name);
+                this.mAllWindowList.Remove(window);
+                this.mVisibleWindowList.Remove(window);
+            }
+            window.SetVisible(false); // 设置窗口不可见
+            window.OnHide(); // 调用窗口的隐藏方法
+            window.OnDestroy(); // 调用窗口的销毁方法
+            GameObject.Destroy(window.gameObject); // 销毁窗口的游戏对象
+        }
+    }
+
+    /// <summary>
+    /// 公有方法：销毁指定类型的窗口。
+    /// </summary>
+    /// <typeparam name="T">窗口类型，必须继承自 WindowBase。</typeparam>
+    public void DestroyWindow<T>() where T : WindowBase
+    {
+        Type type = typeof(T);
+        string windowName = type.Name;
+        this.DestroyWindow(windowName);
+    }
+
+    /// <summary>
+    /// 公有方法：销毁所有窗口，可选地排除指定的窗口。
+    /// </summary>
+    /// <param name="filterList">要排除的窗口名称列表（可选）。</param>
+    public void DestroyAllWindow(List<string> filterList = null)
+    {
+        for (int i = this.mAllWindowList.Count - 1; i >= 0; i--)
+        {
+            WindowBase windowBase = this.mAllWindowList[i];
+            // 跳过要过滤的窗口
+            if (windowBase == null || (filterList != null && filterList.Contains(windowBase.Name)))
+            {
+                continue;
+            }
+            this.DestroyWindow(windowBase.Name);
+        }
+        Resources.UnloadUnusedAssets(); // 卸载未使用的资源
+    }
 
     /// <summary>
     /// 显示指定的窗口。
