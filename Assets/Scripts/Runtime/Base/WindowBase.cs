@@ -23,6 +23,18 @@ public class WindowBase : WindowBehaviour
     /// </summary>
     private List<InputField> mAllInputFieldList = new List<InputField>();
 
+    private CanvasGroup mUIMask;
+    protected Transform mUIContent;
+
+    /// <summary>
+    /// 初始化基类组件
+    /// </summary>
+    private void InitializeBaseComponent()
+    {
+        this.mUIMask = transform.Find("UIMask").GetComponent<CanvasGroup>();
+        this.mUIContent = transform.Find("UIContent").transform;
+    }
+
     #region 生命周期函数
     /// <summary>
     /// 当界面对象创建时调用。
@@ -31,6 +43,7 @@ public class WindowBase : WindowBehaviour
     {
         base.OnAwake();
         // 在此可以进行界面对象的初始化操作
+        this.InitializeBaseComponent();
     }
 
     /// <summary>
@@ -77,12 +90,29 @@ public class WindowBase : WindowBehaviour
         this.mAllInputFieldList.Clear();
     }
 
+    /// <summary>
+    /// 设置界面的可见性。
+    /// </summary>
+    /// <param name="isVisible">是否可见。</param>
     public override void SetVisible(bool isVisible)
     {
         base.SetVisible(isVisible);
         // FIXME 临时代码
         this.gameObject.SetActive(isVisible);
         this.Visible = isVisible;
+    }
+
+    /// <summary>
+    /// 设置遮罩的可见性
+    /// </summary>
+    /// <param name="isVisiable">是否可见</param>
+    public void SetMaskVisiable(bool isVisiable)
+    {
+        if (!UISetting.Instance.SINGMASK_SYSTEM)
+        {
+            return;
+        }
+        this.mUIMask.alpha = isVisiable ? 1 : 0;
     }
     #endregion
 

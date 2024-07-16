@@ -125,6 +125,7 @@ public class UIModule : Singleton<UIModule>
             this.mVisibleWindowList.Remove(window);
             // 设置窗口不可见
             window.SetVisible(false);
+            this.SetWindowMaskVisiable();
             // 调用窗口的 OnHide 方法
             window.OnHide();
         }
@@ -170,6 +171,7 @@ public class UIModule : Singleton<UIModule>
                 this.mVisibleWindowList.Remove(window);
             }
             window.SetVisible(false); // 设置窗口不可见
+            this.SetWindowMaskVisiable();
             window.OnHide(); // 调用窗口的隐藏方法
             window.OnDestroy(); // 调用窗口的销毁方法
             GameObject.Destroy(window.gameObject); // 销毁窗口的游戏对象
@@ -223,12 +225,14 @@ public class UIModule : Singleton<UIModule>
             // 如果窗口存在且未显示，则显示窗口
             if (window.gameObject != null && !window.Visible)
             {
-                // 添加到所有窗口列表
-                this.mAllWindowList.Add(window);
+                // 添加到可见窗口列表
+                this.mVisibleWindowList.Add(window);
                 // 将窗口移动到最上层
                 window.transform.SetAsLastSibling();
                 // 设置窗口为可见
                 window.SetVisible(true);
+                // 新增遮罩层设置
+                this.SetWindowMaskVisiable();
                 // 触发窗口显示事件
                 window.OnShow();
             }
@@ -273,10 +277,60 @@ public class UIModule : Singleton<UIModule>
             this.mAllWindowDic.Add(windowName, windowBase);
             this.mAllWindowList.Add(windowBase);
             this.mVisibleWindowList.Add(windowBase);
+
+            this.SetWindowMaskVisiable();
             return windowBase;
         }
         Debug.LogError($"没有加载到对应的窗口，窗口名字 {windowName}");
         return null;
+    }
+
+    /// <summary>
+    /// 设置窗口遮罩的可见性
+    /// </summary>
+    private void SetWindowMaskVisiable()
+    {
+        if(!UISetting.Instance.SINGMASK_SYSTEM)
+        {
+            return;
+        }
+        WindowBase maxOrderWindowBase = null; //最大渲染层级的窗口
+        int maxOrder = 0; //最大渲染层级
+        int maxIndex = 0; //最大排序下标，在相同父节点下的位置下标
+        //1.关闭所有窗口的Mask 设置不可见
+        //2.从所有窗口中找到一个层级最大的窗口，把Mask设置为可见
+        for (int i = 0; i < this.mVisibleWindowList.Count; i++)
+        {
+            WindowBase window = this.mVisibleWindowList[i];
+            if (window != null && window.gameObject != null)
+            {
+                window.SetMaskVisiable(false);
+                if(maxOrderWindowBase == null)
+                {
+                    maxOrderWindowBase = window;
+                    maxOrder = window.Canvas.sortingOrder;
+                    maxIndex = window.transform.GetSiblingIndex();
+                }
+                else
+                {
+                    //找到最大渲染层级，拿到它
+                    if(window.Canvas.sortingOrder > maxOrder)
+                    {
+                        maxOrderWindowBase = window;
+                        maxOrder = window.Canvas.sortingOrder;
+                    }
+                    else if(window.Canvas.sortingOrder == maxOrder && maxIndex < window.transform.GetSiblingIndex())
+                    {
+                        maxOrderWindowBase = window;
+                        maxIndex = window.transform.GetSiblingIndex();
+                    }
+                }
+            }
+        }
+        if (maxOrderWindowBase != null)
+        {
+            maxOrderWindowBase.SetMaskVisiable(true);
+        }
     }
 
     /// <summary>
@@ -287,9 +341,9 @@ public class UIModule : Singleton<UIModule>
     private GameObject TempLoadWindow(string windowName)
     {
         // 从资源中加载窗口预制体
-        GameObject window = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>($"Window/{windowName}"));
+        GameObject window = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>($"Window/{windowName}"), this.mUIRoot);
         // 设置窗口的父节点、缩放、位置、旋转和名字
-        window.transform.SetParent(this.mUIRoot);
+        //window.transform.SetParent(this.mUIRoot); //先实例化预制体再设置父节点时，Unity可能会在设置父节点之前对预制体进行一些默认的初始化操作，这可能会导致预制体在层级顺序上出现问题。直接在实例化时设置父节点可以确保预制体从一开始就处于正确的层级结构中。
         window.transform.localScale = Vector3.one;
         window.transform.localPosition = Vector3.zero;
         window.transform.localRotation = Quaternion.identity;
@@ -298,4 +352,3 @@ public class UIModule : Singleton<UIModule>
         return window;
     }
 }
-
