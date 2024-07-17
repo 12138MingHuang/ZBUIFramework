@@ -29,7 +29,7 @@ public class GeneratorWindowTool : Editor
         // 生成CS脚本文件
         string csCotent = CreatWindowCS(obj.name);
         Debug.Log("CS脚本生成成功：\n" + csCotent);
-        string csPath = $"{GeneratorConfig.WindowGeneratorPath}/{obj.name}Window.cs";
+        string csPath = $"{GeneratorConfig.WindowGeneratorPath}/{obj.name}.cs";
         //生成脚本文件
         if (File.Exists(csPath))
         {
