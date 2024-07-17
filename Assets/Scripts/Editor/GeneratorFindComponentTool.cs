@@ -59,20 +59,24 @@ public class GeneratorFindComponentTool : Editor
         //    Debug.Log("组件物体字段名：" + item.fieldName);
         //    Debug.Log("组件物体字段类型：" + item.fieldType);
         //}
+
         // 生成CS脚本文件
         string csCotent = CreatCS(obj.name);
         Debug.Log("CS脚本生成成功：\n" + csCotent);
         string csPath = $"{GeneratorConfig.FindComponentGeneratorPath}/{obj.name}UIComponent.cs";
-        //生成脚本文件
-        if (File.Exists(csPath))
-        {
-            File.Delete(csPath);
-        }
-        StreamWriter writer = File.CreateText(csPath);
-        writer.Write(csCotent);
-        writer.Close();
-        AssetDatabase.Refresh();
-        Debug.Log("csPath:" + csPath);
+
+        UIWindowEditor.ShowWindow(csCotent, csPath);
+
+        ////生成脚本文件
+        //if (File.Exists(csPath))
+        //{
+        //    File.Delete(csPath);
+        //}
+        //StreamWriter writer = File.CreateText(csPath);
+        //writer.Write(csCotent);
+        //writer.Close();
+        //AssetDatabase.Refresh();
+        //Debug.Log("csPath:" + csPath);
     }
 
     /// <summary>

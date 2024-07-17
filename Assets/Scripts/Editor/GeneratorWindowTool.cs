@@ -10,6 +10,8 @@ using UnityEngine;
 
 public class GeneratorWindowTool : Editor
 {
+    private static Dictionary<string, string> methodDic = new Dictionary<string, string>();
+
     [MenuItem("GameObject/生成Window脚本", false, 0)]
     private static void CreatWindowScripts()
     {
@@ -30,16 +32,19 @@ public class GeneratorWindowTool : Editor
         string csCotent = CreatWindowCS(obj.name);
         Debug.Log("CS脚本生成成功：\n" + csCotent);
         string csPath = $"{GeneratorConfig.WindowGeneratorPath}/{obj.name}.cs";
-        //生成脚本文件
-        if (File.Exists(csPath))
-        {
-            File.Delete(csPath);
-        }
-        StreamWriter writer = File.CreateText(csPath);
-        writer.Write(csCotent);
-        writer.Close();
-        AssetDatabase.Refresh();
-        Debug.Log("csPath:" + csPath);
+
+        UIWindowEditor.ShowWindow(csCotent, csPath, methodDic);
+
+        ////生成脚本文件
+        //if (File.Exists(csPath))
+        //{
+        //    File.Delete(csPath);
+        //}
+        //StreamWriter writer = File.CreateText(csPath);
+        //writer.Write(csCotent);
+        //writer.Close();
+        //AssetDatabase.Refresh();
+        //Debug.Log("csPath:" + csPath);
     }
 
     /// <summary>
@@ -51,7 +56,7 @@ public class GeneratorWindowTool : Editor
         // 拿去字段名称
         string datalistJson = PlayerPrefs.GetString(GeneratorConfig.OBJDATALIST_KEY);
         List<EditorObjectData> objDataList = JsonConvert.DeserializeObject<List<EditorObjectData>>(datalistJson);
-        Dictionary<string, string> methodDic = new Dictionary<string, string>();
+        methodDic.Clear();
         StringBuilder sb = new StringBuilder();
 
         //添加引用，注释，引入命名空间
