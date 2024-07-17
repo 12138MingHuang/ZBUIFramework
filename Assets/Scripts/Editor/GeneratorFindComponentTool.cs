@@ -248,3 +248,4 @@ public class EditorObjectData
     /// </summary>
     public string fieldType;
 }
+
