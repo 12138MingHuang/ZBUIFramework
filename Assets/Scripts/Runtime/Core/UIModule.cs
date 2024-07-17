@@ -104,7 +104,7 @@ public class UIModule : Singleton<UIModule>
     /// 隐藏指定名称的窗口。
     /// </summary>
     /// <param name="windowName">窗口名称。</param>
-    private void HideWindow(string windowName)
+    public void HideWindow(string windowName)
     {
         // 获取指定名称的窗口实例
         WindowBase window = this.GetWindow(windowName);

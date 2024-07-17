@@ -90,6 +90,11 @@ public class WindowBase : WindowBehaviour
         this.mAllInputFieldList.Clear();
     }
 
+    public void HideWindow()
+    {
+        UIModule.Instance.HideWindow(Name);
+    }
+
     /// <summary>
     /// 设置界面的可见性。
     /// </summary>
