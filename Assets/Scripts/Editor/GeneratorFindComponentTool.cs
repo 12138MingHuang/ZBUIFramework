@@ -7,6 +7,7 @@ using System.IO;
 using System;
 using System.Text;
 using UnityEngine.Events;
+using Unity.Plastic.Newtonsoft.Json;
 
 public class GeneratorFindComponentTool : Editor
 {
@@ -41,6 +42,10 @@ public class GeneratorFindComponentTool : Editor
         }
         // 解析窗口节点数据
         PreWindowNodeData(obj.transform, obj.name);
+
+        //存储字段名称
+        string datalistJson = JsonConvert.SerializeObject(objDataList);
+        PlayerPrefs.SetString(GeneratorConfig.OBJDATALIST_KEY, datalistJson);
 
         //foreach (var item in objFindPathDic)
         //{
@@ -95,16 +100,17 @@ public class GeneratorFindComponentTool : Editor
                 objDataList.Add(objData);
 
                 //计算该结点的查找路径
-                string objPath = name;
+                string objPath = name;  // UIContent/[Button]Close
                 Transform parent = obj.transform;
                 while (parent != null && !parent.name.Equals(winName))
                 {
                     parent = parent.parent;
-                    if (parent != null)
+                    if (parent != null && !parent.name.Equals(winName))
                     {
                         objPath = objPath.Insert(0, parent.name + "/");
                     }
                 }
+
                 objFindPathDic.Add(obj.GetInstanceID(), objPath);
             }
             PreWindowNodeData(trans.GetChild(i), winName);
@@ -164,15 +170,15 @@ public class GeneratorFindComponentTool : Editor
 
             if (string.Equals("GameObject", itemData.fieldType))
             {
-                sb.AppendLine($"\t\t\t{reFieldName} = ({itemData.fieldType})target.transform.Find(\"{item.Value}\").gameObject;");
+                sb.AppendLine($"\t\t\t{reFieldName} = target.transform.Find(\"{item.Value}\").gameObject;");
             }
             else if(string.Equals("Transform", itemData.fieldType))
             {
-                sb.AppendLine($"\t\t\t{reFieldName} = ({itemData.fieldType})target.transform.Find(\"{item.Value}\").transform;");
+                sb.AppendLine($"\t\t\t{reFieldName} = target.transform.Find(\"{item.Value}\").transform;");
             }
             else
             {
-                sb.AppendLine($"\t\t\t{reFieldName} = ({itemData.fieldType})target.transform.GetComponent<{itemData.fieldType}>();");
+                sb.AppendLine($"\t\t\t{reFieldName} = target.transform.Find(\"{item.Value}\").GetComponent<{itemData.fieldType}>();");
             }
         }
         sb.AppendLine("\t\t\t");
@@ -187,11 +193,11 @@ public class GeneratorFindComponentTool : Editor
         {
             string type = item.fieldType;
             string fieldName = item.fieldName;
-            string suffx = "";
+            string suffix = "";
             if (type.Contains("Button"))
             {
-                suffx = "Click";
-                sb.AppendLine($"\t\t\ttarget.AddButtonClickListener({fieldName}{type}, mWindow.On{fieldName}Button{suffx});");
+                suffix = "Click";
+                sb.AppendLine($"\t\t\ttarget.AddButtonClickListener({fieldName}{type}, mWindow.On{fieldName}Button{suffix});");
             }
             if (type.Contains("InputField"))
             {
@@ -199,8 +205,8 @@ public class GeneratorFindComponentTool : Editor
             }
             if (type.Contains("Toggle"))
             {
-                suffx = "Change";
-                sb.AppendLine($"\t\t\ttarget.AddToggleClickListener({fieldName}{type}, mWindow.On{fieldName}Toggle{suffx});");
+                suffix = "Change";
+                sb.AppendLine($"\t\t\ttarget.AddToggleClickListener({fieldName}{type}, mWindow.On{fieldName}Toggle{suffix});");
             }
         }
         sb.AppendLine("\t\t}");
