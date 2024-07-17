@@ -165,11 +165,14 @@ public class GeneratorWindowTool : Editor
         //声明UI组件事件
         sb.AppendLine($"\tpublic void {methodName}({param})");
         sb.AppendLine("\t{");
-        if(methodName == "OnCloseButtonClick")
+        sb.AppendLine(); // 添加一个空行
+        if (methodName == "OnCloseButtonClick")
         {
             sb.AppendLine("\t\tHideWindow();");
         }
         sb.AppendLine("\t}");
+
+        sb.AppendLine(); // 添加一个换行符
 
         //存储UI组件事件 提供给后续新增代码使用
         StringBuilder builder = new StringBuilder();

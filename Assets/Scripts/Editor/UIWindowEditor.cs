@@ -14,9 +14,9 @@ public class UIWindowEditor : EditorWindow
     /// <summary>
     /// 显示代码展示窗口
     /// </summary>
-    /// <param name="content"></param>
-    /// <param name="filePath"></param>
-    /// <param name="insterDic"></param>
+    /// <param name="content">源代码内容</param>
+    /// <param name="filePath">文件路径</param>
+    /// <param name="insterDic">需要插入的内容字典</param>
     public static void ShowWindow(string content, string filePath, Dictionary<string, string> insterDic = null)
     {
         //创建代码展示窗口
@@ -36,11 +36,11 @@ public class UIWindowEditor : EditorWindow
                     int index = window.GetInsertIndex(originScript);
                     if (index != -1)
                     {
-                        originScript = originScript.Insert(index, "\n\t\t" + item.Value + "\n");
-                        window.scriptContent = originScript;
+                        originScript = originScript.Insert(index, "\n" + item.Value + "\t");
                     }
                 }
             }
+            window.scriptContent = originScript;
         }
 
         window.Show();
