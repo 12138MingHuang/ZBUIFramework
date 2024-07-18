@@ -7,8 +7,11 @@ using UnityEngine;
 
 public class UIWindowEditor : EditorWindow
 {
+    // 脚本内容字符串
     private string scriptContent;
+    // 文件路径字符串
     private string filePath;
+    // 滚动位置，用于UI滚动视图    
     private Vector2 scroll = new Vector2();
 
     /// <summary>
@@ -91,7 +94,7 @@ public class UIWindowEditor : EditorWindow
     /// 获取插入代码的下标
     /// </summary>
     /// <param name="content">源代码</param>
-    /// <returns></returns>
+    /// <returns>返回插入代码的下标，如果未找到插入位置则返回-1</returns>
     public int GetInsertIndex(string content)
     {
         // 找到UI组件生成事件下面的第一个public所在位置进行插入
@@ -111,6 +114,7 @@ public class UIWindowEditor : EditorWindow
 
         foreach (Match match in publicMatches)
         {
+            // 判断出现的public是否在UI组件生成事件下面,要在第一个出现在#region UI组件生成事件之后的public关键字之前插入内容。
             if (match.Index > insertPosition)
             {
                 return match.Index;

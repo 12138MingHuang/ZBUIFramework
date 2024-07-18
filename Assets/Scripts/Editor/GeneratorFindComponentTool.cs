@@ -23,7 +23,7 @@ public class GeneratorFindComponentTool : Editor
     /// </summary>
     public static List<EditorObjectData> objDataList;
 
-    [MenuItem("GameObject/生成查找组件", false, 0)]
+    [MenuItem("GameObject/生成查找组件", false, 1)]
     private static void CreatFindComponentScripts()
     {
         GameObject obj = Selection.objects.First() as GameObject; //获取当前选择物体

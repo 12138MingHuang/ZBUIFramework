@@ -12,7 +12,7 @@ public class GeneratorWindowTool : Editor
 {
     private static Dictionary<string, string> methodDic = new Dictionary<string, string>();
 
-    [MenuItem("GameObject/生成Window脚本", false, 0)]
+    [MenuItem("GameObject/生成Window脚本", false, 2)]
     private static void CreatWindowScripts()
     {
         GameObject obj = Selection.objects.First() as GameObject; //获取当前选择物体
