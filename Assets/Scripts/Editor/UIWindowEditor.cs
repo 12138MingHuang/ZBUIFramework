@@ -73,20 +73,35 @@ public class UIWindowEditor : EditorWindow
         EditorGUILayout.EndHorizontal();
     }
 
+    /// <summary>
+    /// 按钮点击事件处理方法
+    /// 当按钮被点击时，执行此方法以生成脚本文件。
+    /// </summary>
     public void ButtonClick()
     {
-        //生成脚本文件
+        // 检查目标文件是否存在，若存在则删除
+        // 这样做是为了确保在生成新脚本前删除旧的脚本文件
         if (File.Exists(filePath))
         {
             File.Delete(filePath);
         }
-        StreamWriter writer = File.CreateText(filePath);
-        writer.Write(scriptContent);
-        writer.Close();
-        AssetDatabase.Refresh();
-        if(EditorUtility.DisplayDialog("自动化生成工具", "生成脚本成功", "确定"))
+
+        // 使用StreamWriter类创建或覆盖文件，并写入脚本内容
+        // filePath是文件路径，scriptContent是待写入的脚本内容
+        using (StreamWriter writer = File.CreateText(filePath))
         {
-            Close();
+            writer.Write(scriptContent);
+            // 不需要显式调用Close方法，因为使用了using语句，它会在结束时自动调用Dispose方法，释放资源
+        }
+
+        // 刷新Unity的AssetDatabase，确保新生成的脚本文件被Unity识别
+        AssetDatabase.Refresh();
+
+        // 显示一个对话框，告知用户脚本生成成功
+        // 如果用户点击了“确定”按钮，则关闭当前窗口或组件
+        if (EditorUtility.DisplayDialog("自动化生成工具", "生成脚本成功", "确定"))
+        {
+            Close(); // 假设Close()方法是关闭当前窗口或组件的方法
         }
     }
 

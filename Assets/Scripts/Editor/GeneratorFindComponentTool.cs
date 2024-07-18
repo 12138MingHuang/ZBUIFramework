@@ -47,36 +47,12 @@ public class GeneratorFindComponentTool : Editor
         string datalistJson = JsonConvert.SerializeObject(objDataList);
         PlayerPrefs.SetString(GeneratorConfig.OBJDATALIST_KEY, datalistJson);
 
-        //foreach (var item in objFindPathDic)
-        //{
-        //    Debug.Log("物体GUID：" + item.Key);
-        //    Debug.Log("物体的查找路径：" + item.Value);
-        //}
-
-        //foreach (var item in objDataList)
-        //{
-        //    Debug.Log("组件物体GUID：" + item.insID);
-        //    Debug.Log("组件物体字段名：" + item.fieldName);
-        //    Debug.Log("组件物体字段类型：" + item.fieldType);
-        //}
-
         // 生成CS脚本文件
         string csCotent = CreatCS(obj.name);
         Debug.Log("CS脚本生成成功：\n" + csCotent);
         string csPath = $"{GeneratorConfig.FindComponentGeneratorPath}/{obj.name}UIComponent.cs";
 
         UIWindowEditor.ShowWindow(csCotent, csPath);
-
-        ////生成脚本文件
-        //if (File.Exists(csPath))
-        //{
-        //    File.Delete(csPath);
-        //}
-        //StreamWriter writer = File.CreateText(csPath);
-        //writer.Write(csCotent);
-        //writer.Close();
-        //AssetDatabase.Refresh();
-        //Debug.Log("csPath:" + csPath);
     }
 
     /// <summary>
@@ -222,6 +198,11 @@ public class GeneratorFindComponentTool : Editor
         return sb.ToString();
     }
 
+    /// <summary>
+    /// 获取编辑器对象数据
+    /// </summary>
+    /// <param name="insID">实例ID</param>
+    /// <returns>返回对应的编辑器对象数据，若未找到则返回null</returns>
     public static EditorObjectData GetEditorObjectData(int insID)
     {
         foreach (var item in objDataList)

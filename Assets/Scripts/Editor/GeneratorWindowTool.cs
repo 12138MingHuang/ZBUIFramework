@@ -34,17 +34,6 @@ public class GeneratorWindowTool : Editor
         string csPath = $"{GeneratorConfig.WindowGeneratorPath}/{obj.name}.cs";
 
         UIWindowEditor.ShowWindow(csCotent, csPath, methodDic);
-
-        ////生成脚本文件
-        //if (File.Exists(csPath))
-        //{
-        //    File.Delete(csPath);
-        //}
-        //StreamWriter writer = File.CreateText(csPath);
-        //writer.Write(csCotent);
-        //writer.Close();
-        //AssetDatabase.Refresh();
-        //Debug.Log("csPath:" + csPath);
     }
 
     /// <summary>
@@ -126,7 +115,7 @@ public class GeneratorWindowTool : Editor
         {
             string type = item.fieldType;
             string methodName = $"On{item.fieldName}";
-            string suffix = "";
+            string suffix = ""; // 事件名后缀
             if (type.Contains("Button"))
             {
                 suffix = "ButtonClick";
@@ -155,11 +144,12 @@ public class GeneratorWindowTool : Editor
 
     /// <summary>
     /// 生成UI事件方法
+    /// 此方法用于根据给定的参数生成UI事件处理方法的代码片段。
     /// </summary>
-    /// <param name="sb"></param>
-    /// <param name="methodDic"></param>
-    /// <param name="methodName"></param>
-    /// <param name="param"></param>
+    /// <param name="sb">StringBuilder实例，用于存储生成的代码片段。</param>
+    /// <param name="methodDic">包含事件处理方法的字典，键为方法名，值为方法实现。</param>
+    /// <param name="methodName">要生成的事件处理方法的名称。</param>
+    /// <param name="param">事件处理方法的参数列表（如果有的话）。</param>
     public static void CreatMethod(StringBuilder sb, ref Dictionary<string, string> methodDic, string methodName, string param = "")
     {
         //声明UI组件事件
