@@ -75,8 +75,7 @@ public class GeneratorWindowTool : Editor
         }
         else if (GeneratorConfig.GeneratorType == GeneratorType.BindComponent)
         {
-            // b.AppendLine($"\tpublic {name}DataComponent dataCompt = null;");
-            sb.AppendLine($"\tpublic {name}DataComponent dataCompt = new {name}DataComponent();");
+            sb.AppendLine($"\tpublic {name}DataComponent dataCompt = null;");
         }
 
         //生成生命周期函数
@@ -93,7 +92,7 @@ public class GeneratorWindowTool : Editor
         }
         else if (GeneratorConfig.GeneratorType == GeneratorType.BindComponent)
         {
-            // sb.AppendLine($"\t\tdataCompt = gameObject.GetComponent<{name}DataComponent>();");
+            sb.AppendLine($"\t\tdataCompt = gameObject.GetComponent<{name}DataComponent>();");
             sb.AppendLine("\t\tdataCompt.InitComponent(this);");
         }
 
