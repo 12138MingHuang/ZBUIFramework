@@ -23,15 +23,16 @@ public class GeneratorFindComponentTool : Editor
     /// </summary>
     public static List<EditorObjectData> objDataList;
 
-    [MenuItem("GameObject/生成查找组件脚本", false, 1)]
+    [MenuItem("GameObject/生成查找组件脚本(Shift + F) #F", false, 1)]
     private static void CreatFindComponentScripts()
     {
         GameObject obj = Selection.objects.First() as GameObject; //获取当前选择物体
-        if(obj == null )
+        if (obj == null)
         {
             Debug.LogError("需要选择 GameObject");
             return;
         }
+
         objDataList = new List<EditorObjectData>();
         objFindPathDic = new Dictionary<int, string>();
 
@@ -40,8 +41,17 @@ public class GeneratorFindComponentTool : Editor
         {
             Directory.CreateDirectory(GeneratorConfig.FindComponentGeneratorPath);
         }
-        // 解析窗口节点数据
-        PreWindowNodeData(obj.transform, obj.name);
+
+        if (GeneratorConfig.parseType == ParseType.Name)
+        {
+            // 通过物体节点名字解析窗口节点数据
+            PreWindowNodeData(obj.transform, obj.name);
+        }
+        else
+        {
+            // 通过Tag解析窗口节点数据
+            PreWindowDataByTag(obj.transform, obj.name);
+        }
 
         //存储字段名称
         string datalistJson = JsonConvert.SerializeObject(objDataList);
@@ -62,7 +72,7 @@ public class GeneratorFindComponentTool : Editor
     /// <param name="WinName">节点名字</param>
     public static void PreWindowNodeData(Transform trans, string winName)
     {
-        for(int i = 0; i < trans.childCount; i++)
+        for (int i = 0; i < trans.childCount; i++)
         {
             GameObject obj = trans.GetChild(i).gameObject;
             string name = obj.name;
@@ -80,7 +90,7 @@ public class GeneratorFindComponentTool : Editor
                 objDataList.Add(objData);
 
                 //计算该结点的查找路径
-                string objPath = name;  // UIContent/[Button]Close
+                string objPath = name; // UIContent/[Button]Close
                 Transform parent = obj.transform;
                 while (parent != null && !parent.name.Equals(winName))
                 {
@@ -93,7 +103,50 @@ public class GeneratorFindComponentTool : Editor
 
                 objFindPathDic.Add(obj.GetInstanceID(), objPath);
             }
+
             PreWindowNodeData(trans.GetChild(i), winName);
+        }
+    }
+
+    /// <summary>
+    /// 根据标签预先处理窗口数据
+    /// </summary>
+    /// <param name="trans">需要遍历的Transform对象</param>
+    /// <param name="winName">窗口名称</param>
+    public static void PreWindowDataByTag(Transform trans, string winName)
+    {
+        for (int i = 0; i < trans.childCount; i++)
+        {
+            GameObject obj = trans.GetChild(i).gameObject;
+            string tagName = obj.tag;
+            if (GeneratorConfig.TAGArr.Contains((tagName)))
+            {
+                string fieldName = obj.name;
+                string fieldType = tagName;
+                EditorObjectData objData = new EditorObjectData
+                {
+                    fieldName = fieldName,
+                    fieldType = fieldType,
+                    insID = obj.GetInstanceID()
+                };
+                objDataList.Add(objData);
+
+                //计算该结点的查找路径
+                string objPath = obj.name; // UIContent/[Button]Close
+                Transform parent = obj.transform;
+                while (parent != null && !parent.name.Equals(winName))
+                {
+                    parent = parent.parent;
+                    if (parent != null && !parent.name.Equals(winName))
+                    {
+                        objPath = objPath.Insert(0, parent.name + "/");
+                    }
+                }
+
+                objFindPathDic.Add(obj.GetInstanceID(), objPath);
+            }
+
+            PreWindowDataByTag(trans.GetChild(i), winName);
         }
     }
 
@@ -121,7 +174,7 @@ public class GeneratorFindComponentTool : Editor
         sb.AppendLine();
 
         //生成命名空间
-        if(!string.IsNullOrEmpty(nameSpaceName))
+        if (!string.IsNullOrEmpty(nameSpaceName))
         {
             sb.AppendLine($"namespace {nameSpaceName}");
             sb.AppendLine("{");
@@ -152,15 +205,17 @@ public class GeneratorFindComponentTool : Editor
             {
                 sb.AppendLine($"\t\t\t{reFieldName} = target.transform.Find(\"{item.Value}\").gameObject;");
             }
-            else if(string.Equals("Transform", itemData.fieldType))
+            else if (string.Equals("Transform", itemData.fieldType))
             {
                 sb.AppendLine($"\t\t\t{reFieldName} = target.transform.Find(\"{item.Value}\").transform;");
             }
             else
             {
-                sb.AppendLine($"\t\t\t{reFieldName} = target.transform.Find(\"{item.Value}\").GetComponent<{itemData.fieldType}>();");
+                sb.AppendLine(
+                    $"\t\t\t{reFieldName} = target.transform.Find(\"{item.Value}\").GetComponent<{itemData.fieldType}>();");
             }
         }
+
         sb.AppendLine("\t\t\t");
         sb.AppendLine("\t\t\t");
         sb.AppendLine("\t\t\t//组件事件绑定");
@@ -177,24 +232,31 @@ public class GeneratorFindComponentTool : Editor
             if (type.Contains("Button"))
             {
                 suffix = "Click";
-                sb.AppendLine($"\t\t\ttarget.AddButtonClickListener({fieldName}{type}, mWindow.On{fieldName}Button{suffix});");
+                sb.AppendLine(
+                    $"\t\t\ttarget.AddButtonClickListener({fieldName}{type}, mWindow.On{fieldName}Button{suffix});");
             }
+
             if (type.Contains("InputField"))
             {
-                sb.AppendLine($"\t\t\ttarget.AddInputFieldListener({fieldName}{type}, mWindow.On{fieldName}InputChange, mWindow.On{fieldName}InputEnd);");
+                sb.AppendLine(
+                    $"\t\t\ttarget.AddInputFieldListener({fieldName}{type}, mWindow.On{fieldName}InputChange, mWindow.On{fieldName}InputEnd);");
             }
+
             if (type.Contains("Toggle"))
             {
                 suffix = "Change";
-                sb.AppendLine($"\t\t\ttarget.AddToggleClickListener({fieldName}{type}, mWindow.On{fieldName}Toggle{suffix});");
+                sb.AppendLine(
+                    $"\t\t\ttarget.AddToggleClickListener({fieldName}{type}, mWindow.On{fieldName}Toggle{suffix});");
             }
         }
+
         sb.AppendLine("\t\t}");
         sb.AppendLine("\t}");
         if (!string.IsNullOrEmpty(nameSpaceName))
         {
             sb.AppendLine("}");
         }
+
         return sb.ToString();
     }
 
@@ -212,6 +274,7 @@ public class GeneratorFindComponentTool : Editor
                 return item;
             }
         }
+
         return null;
     }
 }
@@ -233,4 +296,3 @@ public class EditorObjectData
     /// </summary>
     public string fieldType;
 }
-

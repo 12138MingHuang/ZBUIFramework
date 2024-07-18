@@ -12,7 +12,7 @@ public class GeneratorWindowTool : Editor
 {
     private static Dictionary<string, string> methodDic = new Dictionary<string, string>();
 
-    [MenuItem("GameObject/生成Window脚本", false, 3)]
+    [MenuItem("GameObject/生成Window脚本(Shift + V) #V", false, 3)]
     private static void CreatWindowScripts()
     {
         GameObject obj = Selection.objects.First() as GameObject; //获取当前选择物体
@@ -94,6 +94,7 @@ public class GeneratorWindowTool : Editor
         {
             sb.AppendLine("\t\tdataCompt.InitComponent(this);");
         }
+
         sb.AppendLine("\t}");
 
         //生成OnHide
@@ -163,7 +164,8 @@ public class GeneratorWindowTool : Editor
     /// <param name="methodDic">包含事件处理方法的字典，键为方法名，值为方法实现。</param>
     /// <param name="methodName">要生成的事件处理方法的名称。</param>
     /// <param name="param">事件处理方法的参数列表（如果有的话）。</param>
-    public static void CreatMethod(StringBuilder sb, ref Dictionary<string, string> methodDic, string methodName, string param = "")
+    public static void CreatMethod(StringBuilder sb, ref Dictionary<string, string> methodDic, string methodName,
+        string param = "")
     {
         //声明UI组件事件
         sb.AppendLine($"\tpublic void {methodName}({param})");
@@ -173,6 +175,7 @@ public class GeneratorWindowTool : Editor
         {
             sb.AppendLine("\t\tHideWindow();");
         }
+
         sb.AppendLine("\t}");
 
         sb.AppendLine(); // 添加一个换行符

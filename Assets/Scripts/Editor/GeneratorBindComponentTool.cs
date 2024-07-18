@@ -10,13 +10,12 @@ using UnityEngine;
 
 public class GeneratorBindComponentTool : Editor
 {
-
     /// <summary>
     ///     查找对象数据
     /// </summary>
     public static List<EditorObjectData> objDataList;
 
-    [MenuItem("GameObject/生成绑定组件脚本", false, 2)]
+    [MenuItem("GameObject/生成绑定组件脚本(Shift + B) #B", false, 2)]
     private static void CreatFindComponentScripts()
     {
         GameObject obj = Selection.objects.First() as GameObject; //获取当前选择物体
@@ -25,6 +24,7 @@ public class GeneratorBindComponentTool : Editor
             Debug.LogError("需要选择 GameObject");
             return;
         }
+
         objDataList = new List<EditorObjectData>();
 
         // 设置脚本生成路径
@@ -32,8 +32,17 @@ public class GeneratorBindComponentTool : Editor
         {
             Directory.CreateDirectory(GeneratorConfig.BindComponentGeneratorPath);
         }
-        // 解析窗口节点数据
-        PreWindowNodeData(obj.transform, obj.name);
+
+        if (GeneratorConfig.parseType == ParseType.Name)
+        {
+            // 通过物体节点名字解析窗口节点数据
+            PreWindowNodeData(obj.transform, obj.name);
+        }
+        else
+        {
+            // 通过Tag解析窗口节点数据
+            PreWindowDataByTag(obj.transform, obj.name);
+        }
 
         //存储字段名称
         string datalistJson = JsonConvert.SerializeObject(objDataList);
@@ -72,7 +81,36 @@ public class GeneratorBindComponentTool : Editor
                 };
                 objDataList.Add(objData);
             }
+
             PreWindowNodeData(trans.GetChild(i), winName);
+        }
+    }
+
+    /// <summary>
+    /// 根据标签预先处理窗口数据
+    /// </summary>
+    /// <param name="trans">需要遍历的Transform对象</param>
+    /// <param name="winName">窗口名称</param>
+    public static void PreWindowDataByTag(Transform trans, string winName)
+    {
+        for (int i = 0; i < trans.childCount; i++)
+        {
+            GameObject obj = trans.GetChild(i).gameObject;
+            string tagName = obj.tag;
+            if (GeneratorConfig.TAGArr.Contains((tagName)))
+            {
+                string fieldName = obj.name;
+                string fieldType = tagName;
+                EditorObjectData objData = new EditorObjectData
+                {
+                    fieldName = fieldName,
+                    fieldType = fieldType,
+                    insID = obj.GetInstanceID()
+                };
+                objDataList.Add(objData);
+            }
+
+            PreWindowDataByTag(trans.GetChild(i), winName);
         }
     }
 
@@ -133,24 +171,31 @@ public class GeneratorBindComponentTool : Editor
             if (type.Contains("Button"))
             {
                 suffix = "Click";
-                sb.AppendLine($"\t\t\ttarget.AddButtonClickListener({fieldName}{type}, mWindow.On{fieldName}Button{suffix});");
+                sb.AppendLine(
+                    $"\t\t\ttarget.AddButtonClickListener({fieldName}{type}, mWindow.On{fieldName}Button{suffix});");
             }
+
             if (type.Contains("InputField"))
             {
-                sb.AppendLine($"\t\t\ttarget.AddInputFieldListener({fieldName}{type}, mWindow.On{fieldName}InputChange, mWindow.On{fieldName}InputEnd);");
+                sb.AppendLine(
+                    $"\t\t\ttarget.AddInputFieldListener({fieldName}{type}, mWindow.On{fieldName}InputChange, mWindow.On{fieldName}InputEnd);");
             }
+
             if (type.Contains("Toggle"))
             {
                 suffix = "Change";
-                sb.AppendLine($"\t\t\ttarget.AddToggleClickListener({fieldName}{type}, mWindow.On{fieldName}Toggle{suffix});");
+                sb.AppendLine(
+                    $"\t\t\ttarget.AddToggleClickListener({fieldName}{type}, mWindow.On{fieldName}Toggle{suffix});");
             }
         }
+
         sb.AppendLine("\t\t}");
         sb.AppendLine("\t}");
         if (!string.IsNullOrEmpty(nameSpaceName))
         {
             sb.AppendLine("}");
         }
+
         return sb.ToString();
     }
 
@@ -158,14 +203,15 @@ public class GeneratorBindComponentTool : Editor
     /// 往窗口物体自动添加组件，脚本编译好后系统自动调用
     /// </summary>
     [UnityEditor.Callbacks.DidReloadScripts]
-    public static void AddComponent2Window()
+    public static void AddComponentToWindow()
     {
         //如果当前不是生成数据脚本的回调，则不执行
         string className = EditorPrefs.GetString(GeneratorConfig.GENERATOR_CLASS_NAME);
-        if(string.IsNullOrEmpty(className))
+        if (string.IsNullOrEmpty(className))
         {
             return;
         }
+
         //1.通过反射的方式，从程序集中找到这个脚本，把它挂载到当前窗口物体上
         //获取所有程序集
         Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
@@ -174,11 +220,11 @@ public class GeneratorBindComponentTool : Editor
         //获取类所在的程序集路径
         string relClassName = "ZMUIFrameWork." + className;
         Type type = cSharpAssembly.GetType(relClassName);
-        if(type == null)
+        if (type == null)
         {
             return;
         }
-        
+
         //获取到要挂载的那个物体
         string windowObjName = className.Replace("DataComponent", "");
         GameObject windowObj = GameObject.Find(windowObjName);
@@ -190,13 +236,14 @@ public class GeneratorBindComponentTool : Editor
                 return;
             }
         }
+
         //先获取现在窗口上有没有这个数据组件， 如果没有才进行挂载
         Component component = windowObj.GetComponent(type);
         if (component == null)
         {
             component = windowObj.AddComponent(type);
         }
-        
+
         //2.通过反射的方式，遍历数据列表，找到对应的字段，赋值
         //获取对象数据列表
         string dataListJson = PlayerPrefs.GetString(GeneratorConfig.OBJDATALIST_KEY);
@@ -208,12 +255,12 @@ public class GeneratorBindComponentTool : Editor
         {
             foreach (var objectData in objDataList)
             {
-                if(item.Name == objectData.fieldName + objectData.fieldType)
+                if (item.Name == objectData.fieldName + objectData.fieldType)
                 {
                     //根据InsId找到对应的对象
                     GameObject uiObject = EditorUtility.InstanceIDToObject(objectData.insID) as GameObject;
                     //设置该字段所对应的对象
-                    if(string.Equals(objectData.fieldType, "GameObject"))
+                    if (string.Equals(objectData.fieldType, "GameObject"))
                     {
                         item.SetValue(component, uiObject);
                     }
@@ -221,11 +268,12 @@ public class GeneratorBindComponentTool : Editor
                     {
                         item.SetValue(component, uiObject.GetComponent(objectData.fieldType));
                     }
+
                     break;
                 }
             }
         }
-        
+
         //删除存储数据列表的EditorPrefs,防止改动其他脚本时候再次调用该接口
         EditorPrefs.DeleteKey(GeneratorConfig.GENERATOR_CLASS_NAME);
     }

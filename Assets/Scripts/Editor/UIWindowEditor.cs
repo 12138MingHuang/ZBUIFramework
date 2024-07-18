@@ -9,8 +9,10 @@ public class UIWindowEditor : EditorWindow
 {
     // 脚本内容字符串
     private string scriptContent;
+
     // 文件路径字符串
     private string filePath;
+
     // 滚动位置，用于UI滚动视图    
     private Vector2 scroll = new Vector2();
 
@@ -23,12 +25,13 @@ public class UIWindowEditor : EditorWindow
     public static void ShowWindow(string content, string filePath, Dictionary<string, string> insterDic = null)
     {
         //创建代码展示窗口
-        UIWindowEditor window = (UIWindowEditor)GetWindowWithRect(typeof(UIWindowEditor), new Rect(100, 50, 800, 700), true, "Window生成界面");
+        UIWindowEditor window =
+            (UIWindowEditor)GetWindowWithRect(typeof(UIWindowEditor), new Rect(100, 50, 800, 700), true, "Window生成界面");
         window.scriptContent = content;
         window.filePath = filePath;
 
         //处理代码新增功能
-        if(File.Exists(filePath) && insterDic != null)
+        if (File.Exists(filePath) && insterDic != null)
         {
             //获取原始代码
             string originScript = File.ReadAllText(filePath);
@@ -43,6 +46,7 @@ public class UIWindowEditor : EditorWindow
                     }
                 }
             }
+
             window.scriptContent = originScript;
         }
 
@@ -65,11 +69,12 @@ public class UIWindowEditor : EditorWindow
 
         //绘制按钮
         EditorGUILayout.BeginHorizontal();
-        if(GUILayout.Button("生成脚本", GUILayout.Height(30)))
+        if (GUILayout.Button("生成脚本", GUILayout.Height(30)))
         {
             //按钮事件
             ButtonClick();
         }
+
         EditorGUILayout.EndHorizontal();
     }
 
