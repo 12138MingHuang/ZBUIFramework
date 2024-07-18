@@ -75,6 +75,7 @@ public class GeneratorWindowTool : Editor
         }
         else if (GeneratorConfig.GeneratorType == GeneratorType.BindComponent)
         {
+            // b.AppendLine($"\tpublic {name}DataComponent dataCompt = null;");
             sb.AppendLine($"\tpublic {name}DataComponent dataCompt = new {name}DataComponent();");
         }
 
@@ -92,6 +93,7 @@ public class GeneratorWindowTool : Editor
         }
         else if (GeneratorConfig.GeneratorType == GeneratorType.BindComponent)
         {
+            // sb.AppendLine($"\t\tdataCompt = gameObject.GetComponent<{name}DataComponent>();");
             sb.AppendLine("\t\tdataCompt.InitComponent(this);");
         }
 

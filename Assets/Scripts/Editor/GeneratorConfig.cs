@@ -64,7 +64,7 @@ public class GeneratorConfig
     /// <summary>
     /// 静态只读字段，表示生成器类型，其默认值为 GeneratorType.BindComponent。
     /// </summary>
-    public static readonly GeneratorType GeneratorType = GeneratorType.FindComponent;
+    public static readonly GeneratorType GeneratorType = GeneratorType.BindComponent;
 
     /// <summary>
     /// 包含一系列标签名称的静态只读字符串数组。
@@ -76,7 +76,7 @@ public class GeneratorConfig
     };
 
     /// <summary>
-    /// 表示解析数据类型，其默认值为 ParseType.Tag。
+    /// 表示解析数据类型，其默认值为 ParseType.Name。
     /// </summary>
-    public static readonly ParseType parseType = ParseType.Tag;
+    public static readonly ParseType parseType = ParseType.Name;
 }
