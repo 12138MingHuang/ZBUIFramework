@@ -12,7 +12,7 @@ public class GeneratorWindowTool : Editor
 {
     private static Dictionary<string, string> methodDic = new Dictionary<string, string>();
 
-    [MenuItem("GameObject/生成Window脚本", false, 2)]
+    [MenuItem("GameObject/生成Window脚本", false, 3)]
     private static void CreatWindowScripts()
     {
         GameObject obj = Selection.objects.First() as GameObject; //获取当前选择物体
@@ -69,18 +69,31 @@ public class GeneratorWindowTool : Editor
         sb.AppendLine("{");
 
         //生成字段
-        sb.AppendLine($"\tpublic {name}UIComponent uiCompt = new {name}UIComponent();");
+        if (GeneratorConfig.GeneratorType == GeneratorType.FindComponent)
+        {
+            sb.AppendLine($"\tpublic {name}UIComponent uiCompt = new {name}UIComponent();");
+        }
+        else if (GeneratorConfig.GeneratorType == GeneratorType.BindComponent)
+        {
+            sb.AppendLine($"\tpublic {name}DataComponent dataCompt = new {name}DataComponent();");
+        }
 
         //生成生命周期函数
         sb.AppendLine();
         sb.AppendLine("\t#region 生命周期函数");
-
         //生成OnAwake
         sb.AppendLine("\t//调用机制与Mono Awake一致");
         sb.AppendLine("\tpublic override void OnAwake()");
         sb.AppendLine("\t{");
         sb.AppendLine("\t\tbase.OnAwake();");
-        sb.AppendLine("\t\tuiCompt.InitComponent(this);");
+        if (GeneratorConfig.GeneratorType == GeneratorType.FindComponent)
+        {
+            sb.AppendLine("\t\tuiCompt.InitComponent(this);");
+        }
+        else if (GeneratorConfig.GeneratorType == GeneratorType.BindComponent)
+        {
+            sb.AppendLine("\t\tdataCompt.InitComponent(this);");
+        }
         sb.AppendLine("\t}");
 
         //生成OnHide
