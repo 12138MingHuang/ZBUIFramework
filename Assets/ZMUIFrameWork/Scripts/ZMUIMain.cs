@@ -31,5 +31,15 @@ public class ZMUIMain : MonoBehaviour
         //{
         //    UIModule.Instance.HideWindow<SignUpWindow>();
         //}
+        
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            UIModule.Instance.PushAndPopStackWindow<SettingWindow>();
+        }
+
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            UIModule.Instance.PushAndPopStackWindow<ChatWindow>();
+        }
     }
 }

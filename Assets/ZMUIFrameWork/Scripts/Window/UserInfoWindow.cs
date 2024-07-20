@@ -40,6 +40,11 @@ public class UserInfoWindow : WindowBase
 	#endregion
 
 	#region UI组件生成事件
+	
+	public void OnFriendButtonClick()
+	{
+		UIModule.Instance.PopUpWindow<FriendWindow>();
+	}
 	public void OnCloseButtonClick()
 	{
 

@@ -44,6 +44,16 @@ public class LoginWindow : WindowBase
 	{
 		UIModule.Instance.PopUpWindow<HallWindow>();
 		this.HideWindow();
+		
+		// UIModule.Instance.PushWindowToStack<SettingWindow>();
+		// UIModule.Instance.PushWindowToStack<ChatWindow>();
+		// UIModule.Instance.PushWindowToStack<UserInfoWindow>();
+
+		// UIModule.Instance.StartPopFirstStackWindow();
+		
+		UIModule.Instance.PushAndPopStackWindow<UserInfoWindow>();
+		UIModule.Instance.PushAndPopStackWindow<SettingWindow>((settingWindow) => Debug.Log(settingWindow.Name + "设置界面打开了"));
+		UIModule.Instance.PushAndPopStackWindow<ChatWindow>();
 	}
 
 	#endregion
