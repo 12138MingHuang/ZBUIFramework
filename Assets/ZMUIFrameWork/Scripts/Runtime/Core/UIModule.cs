@@ -33,6 +33,11 @@ public class UIModule : Singleton<UIModule>
     private List<WindowBase> mVisibleWindowList = new List<WindowBase>();
 
     /// <summary>
+    /// 窗口配置表
+    /// </summary>
+    private WindowConfig mwindowConfig;
+
+    /// <summary>
     /// 初始化 UI 管理器
     /// </summary>
     public void Initialize()
@@ -41,6 +46,13 @@ public class UIModule : Singleton<UIModule>
         this.mUICamera = GameObject.Find("UICamera").GetComponent<Camera>();
         // 获取 UI 根节点
         this.mUIRoot = GameObject.Find("UIRoot").transform;
+        // 加载窗口配置表
+        this.mwindowConfig = Resources.Load<WindowConfig>("WindowConfig");
+
+        // 只在编辑器环境下
+#if UNITY_EDITOR
+        this.mwindowConfig.GenerateWindowConfig();
+#endif
     }
 
     /// <summary>
@@ -341,7 +353,7 @@ public class UIModule : Singleton<UIModule>
     private GameObject TempLoadWindow(string windowName)
     {
         // 从资源中加载窗口预制体
-        GameObject window = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>($"Window/{windowName}"), this.mUIRoot);
+        GameObject window = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(this.mwindowConfig.GetWindowPath(windowName)), this.mUIRoot);
         // 设置窗口的父节点、缩放、位置、旋转和名字
         //window.transform.SetParent(this.mUIRoot); //先实例化预制体再设置父节点时，Unity可能会在设置父节点之前对预制体进行一些默认的初始化操作，这可能会导致预制体在层级顺序上出现问题。直接在实例化时设置父节点可以确保预制体从一开始就处于正确的层级结构中。
         window.transform.localScale = Vector3.one;
