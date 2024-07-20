@@ -8,10 +8,6 @@ public class ZMUIMain : MonoBehaviour
     {
         UIModule.Instance.Initialize();
         LoginWindow loginWindow = UIModule.Instance.PopUpWindow<LoginWindow>();
-        loginWindow.Test();
-
-        LoginWindow getWindow = UIModule.Instance.GetWindow<LoginWindow>();
-        getWindow.Test2();
     }
     private void Update()
     {
