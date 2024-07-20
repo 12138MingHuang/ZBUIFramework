@@ -13,7 +13,7 @@ public class WindowConfig : ScriptableObject
     [Space]
     [Header("UI文件夹路径列表，只填Resources下的文件夹名即可")]
     [Tooltip("windowPathList 用于指定需要生成配置的文件夹路径，以 Resources/ 为根目录。需手动填写，只填Resources下的文件夹名即可。")]
-    private List<string> windowPathList = new List<string>();
+    public List<string> windowPathList = new List<string>();
     
     /// <summary>
     /// 生成配置后的数据。
