@@ -54,6 +54,8 @@ public class UIModule : Singleton<UIModule>
         this.mwindowConfig.GenerateWindowConfig();
 #endif
     }
+    
+    #region 窗口管理
 
     /// <summary>
     /// 弹出窗口，如果窗口已存在则显示，否则初始化并显示。
@@ -363,4 +365,10 @@ public class UIModule : Singleton<UIModule>
 
         return window;
     }
+    
+    #endregion
+    
+    #region 堆栈系统
+    
+    #endregion
 }

@@ -7,16 +7,25 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "WindowConfig", menuName = "WindowConfig", order = 0)]
 public class WindowConfig : ScriptableObject
 {
+    /// <summary>
+    /// UI文件夹路径列表，只填Resources下的文件夹名即可。
+    /// </summary>
     [Space]
     [Header("UI文件夹路径列表，只填Resources下的文件夹名即可")]
     [Tooltip("windowPathList 用于指定需要生成配置的文件夹路径，以 Resources/ 为根目录。需手动填写，只填Resources下的文件夹名即可。")]
-    public List<string> windowPathList = new List<string>();
+    private List<string> windowPathList = new List<string>();
     
+    /// <summary>
+    /// 生成配置后的数据。
+    /// </summary>
     [Space]
     [Header("生成配置后的数据")]
     [Tooltip("windowList 用于保存生成配置后的数据。运行时自动读取")]
     public List<WindowData> windowList = new List<WindowData>();
     
+    /// <summary>
+    /// 生成窗口配置信息。
+    /// </summary>
     public void GenerateWindowConfig() // 更正了方法名拼写
     {
         // 如果windowRootArr为空，则给出提示并退出方法
@@ -75,7 +84,11 @@ public class WindowConfig : ScriptableObject
         }
     }
 
-
+    /// <summary>
+    /// 根据窗口名称获取窗口路径。
+    /// </summary>
+    /// <param name="windowName">窗口名称。</param>
+    /// <returns>窗口路径，若不存在则返回null。</returns>
     public string GetWindowPath(string windowName)
     {
         foreach (var item in windowList)
@@ -90,7 +103,9 @@ public class WindowConfig : ScriptableObject
     }
 }
 
-
+/// <summary>
+/// 窗口数据类，用于保存UI窗口的名称和路径信息。
+/// </summary>
 [System.Serializable]
 public class WindowData
 {
