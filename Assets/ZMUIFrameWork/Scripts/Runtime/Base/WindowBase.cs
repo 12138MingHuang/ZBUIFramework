@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using DG.Tweening;
 
 /// <summary>
 /// UI窗口基类，扩展自 WindowBehaviour，负责部分共用功能的统一化处理。
@@ -32,6 +33,12 @@ public class WindowBase : WindowBehaviour
     /// 界面内容节点
     /// </summary>
     protected Transform mUIContent;
+    
+    /// <summary>
+    /// 是否禁用动画。
+    /// </summary>
+    protected bool mDisableAnimation = false;
+
 
     /// <summary>
     /// 初始化基类组件
@@ -60,6 +67,7 @@ public class WindowBase : WindowBehaviour
     {
         base.OnShow();
         // 在此处理界面显示时的逻辑
+        this.ShowAnimation();
     }
 
     /// <summary>
@@ -99,7 +107,8 @@ public class WindowBase : WindowBehaviour
 
     public void HideWindow()
     {
-        UIModule.Instance.HideWindow(Name);
+        // UIModule.Instance.HideWindow(Name);
+        this.HideAnimation();
     }
 
     /// <summary>
@@ -222,5 +231,42 @@ public class WindowBase : WindowBehaviour
             item.onEndEdit.RemoveAllListeners();
         }
     }
+    #endregion
+    
+    #region 动画管理
+
+    public void ShowAnimation()
+    {
+        //基础UI不需要动画（层级是否>99,这里默认基础弹窗0-99层级）
+        if (Canvas.sortingOrder > 99 && this.mDisableAnimation == false)
+        {
+            //mask动画（需求而定）
+            this.mUIMask.alpha = 0;
+            this.mUIMask.DOFade(1, .2f);//这里会引发一个堆栈弹出表现上的问题，会感觉闪烁一下，其实可以，判断是不是堆栈弹窗，是就不播
+            
+            //缩放动画
+            this.mUIContent.localScale = Vector3.one* .7f;
+            this.mUIContent.DOScale(Vector3.one, .4f).SetEase(Ease.OutBack);
+        }
+    }
+
+    public void HideAnimation()
+    {
+        if (Canvas.sortingOrder > 99 && this.mDisableAnimation == false)
+        {
+            this.mUIContent
+                .DOScale(Vector3.one * 1.1f, .2f)
+                .SetEase(Ease.OutBack)
+                .OnComplete(() =>
+                {
+                    UIModule.Instance.HideWindow(Name);
+                });
+        }
+        else
+        {
+            UIModule.Instance.HideWindow(Name);
+        }
+    }
+
     #endregion
 }
