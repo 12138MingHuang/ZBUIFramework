@@ -36,6 +36,16 @@ public class UIModule : Singleton<UIModule>
     /// 窗口配置表
     /// </summary>
     private WindowConfig mwindowConfig;
+    
+    /// <summary>
+    /// 窗口堆栈，用于窗口的层级管理,弹窗的循环弹出
+    /// </summary>
+    private Queue<WindowBase> mWindowStack = new Queue<WindowBase>();
+
+    /// <summary>
+    /// 开始弹出堆栈的标志，可以用来处理多种情况，比如：正在出栈中有其他界面弹出，可以直接放到栈内进行弹出
+    /// </summary>
+    private bool mStartPopStackWindowStatus = false;
 
     /// <summary>
     /// 初始化 UI 管理器
@@ -80,6 +90,30 @@ public class UIModule : Singleton<UIModule>
         // 否则初始化并显示新窗口
         T newWindow = new T();
         return this.InitializeWindow(newWindow, windowName) as T;
+    }
+
+    /// <summary>
+    /// 弹出窗口并返回窗口实例。
+    /// 如果窗口已存在，则显示已存在的窗口；否则，初始化并显示新窗口。
+    /// </summary>
+    /// <param name="window">需要弹出的窗口对象。</param>
+    /// <returns>返回弹出的窗口实例。</returns>
+    private WindowBase PopUpWindow(WindowBase window)
+    {
+        // 获取窗口类型
+        Type type = window.GetType();
+        // 获取窗口名称
+        string windowName = type.Name;
+        // 获取已存在的窗口
+        WindowBase windowBase = this.GetWindow(windowName);
+
+        // 如果窗口已存在，则显示窗口
+        if (windowBase != null)
+        {
+            return this.ShowWindow(windowName);
+        }
+        
+        return this.InitializeWindow(window, windowName);
     }
 
     /// <summary>
@@ -143,6 +177,8 @@ public class UIModule : Singleton<UIModule>
             // 调用窗口的 OnHide 方法
             window.OnHide();
         }
+        //在出栈的情况下，上一个界面隐藏时，自动打开栈中的下一个界面，内部已经判断了，是否属于堆栈系统的
+        this.PopNextStackWindow(window);
     }
 
     /// <summary>
@@ -193,6 +229,8 @@ public class UIModule : Singleton<UIModule>
             // 清理引用，帮助垃圾回收
             window = null;
             System.GC.Collect();
+            //在出栈的情况下，上一个界面销毁时，自动打开栈中的下一个界面，内部已经判断了，是否属于堆栈系统的
+            this.PopNextStackWindow(window);
         }
     }
 
@@ -369,6 +407,105 @@ public class UIModule : Singleton<UIModule>
     #endregion
     
     #region 堆栈系统
+
+    /// <summary>
+    /// 将一个界面实例压入窗口堆栈中
+    /// </summary>
+    /// <typeparam name="T">窗口类型，必须继承自WindowBase，且支持无参数实例化</typeparam>
+    /// <param name="popCallBack">当界面从堆栈中弹出时执行的回调函数，可以为空</param>
+    public void PushWindowToStack<T>(Action<WindowBase> popCallBack = null) where T : WindowBase, new()
+    {
+        T windowBase = new T();
+        windowBase.PopStackListener = popCallBack;
+        this.mWindowStack.Enqueue(windowBase);
+    }
+
+    /// <summary>
+    /// 弹出栈顶的窗口
+    /// </summary>
+    /// <remarks>
+    /// 此方法用于开始弹出栈顶的窗口。如果栈顶的窗口弹出流程已经开始，则不会执行任何操作。
+    /// </remarks>
+    public void StartPopFirstStackWindow()
+    {
+        if(this.mStartPopStackWindowStatus) return;
+        this.mStartPopStackWindowStatus = true; // 已经开始进行堆栈窗口弹出的流程了
+        this.PopStackWindow();
+    }
+    
+    /// <summary>
+    /// 压入并立即弹出堆栈中的弹窗
+    /// </summary>
+    /// <typeparam name="T">弹窗类型，必须继承自 WindowBase，且有无参数的构造函数</typeparam>
+    /// <param name="popCallBack">弹窗弹出后的回调函数，传入参数为弹出的 WindowBase 类型的弹窗实例（可选）</param>
+    public void PushAndPopStackWindow<T>(Action<WindowBase> popCallBack = null) where T : WindowBase, new()
+    {
+        this.PushWindowToStack<T>(popCallBack);
+        this.StartPopFirstStackWindow();
+    }
+    
+    /// <summary>
+    /// 弹出下一个栈中的窗口
+    /// </summary>
+    /// <param name="windowBase">要弹出的窗口对象</param>
+    private void PopNextStackWindow(WindowBase windowBase)
+    {
+        if (windowBase != null && this.mStartPopStackWindowStatus && windowBase.PopStack)
+        {
+            windowBase.PopStack = false;
+            this.PopStackWindow();
+        }
+    }
+    
+    /// <summary>
+    /// 弹出栈顶的窗口，并触发其弹出时的回调函数（如果已设置）。
+    /// </summary>
+    /// <returns>如果成功弹出窗口，则返回true；否则返回false。</returns>
+    public bool PopStackWindow()
+    {
+        // 检查窗口堆栈是否为空
+        if (this.mWindowStack.Count <= 0)
+        {
+            // 如果为空，则标记起始弹出窗口状态为false
+            this.mStartPopStackWindowStatus = false;
+            // 未能弹出窗口，返回false
+            return false;
+        }
+
+        // 从堆栈中移除并获取栈顶的窗口
+        WindowBase window = this.mWindowStack.Dequeue();
+
+        // 弹出（或显示）栈顶的窗口，并返回该窗口的实例
+        WindowBase topWindow = this.PopUpWindow(window);
+
+        // 如果之前的窗口有PopStackListener设置，则将其复制到新弹出的窗口
+        // 这样新弹出的窗口在弹出时也会触发相同的回调函数
+        topWindow.PopStackListener = window.PopStackListener;
+
+        // 设置新弹出的窗口的PopStack属性为true，可能用于标识窗口状态或触发某些逻辑
+        topWindow.PopStack = true;
+
+        // 如果新弹出的窗口有PopStackListener设置，则执行其回调函数
+        // 传递新弹出的窗口实例作为参数
+        topWindow.PopStackListener?.Invoke(topWindow);
+
+        // 在执行完回调函数后，清空新弹出的窗口的PopStackListener
+        // 可能是为了避免重复触发或释放资源
+        topWindow.PopStackListener = null;
+
+        // 成功弹出窗口，返回true
+        return true;
+    }
+    
+    /// <summary>
+    /// 清空窗口堆栈
+    /// </summary>
+    public void ClearStackWindows()
+    {
+        this.mWindowStack.Clear();
+        // 标记起始弹出窗口状态为false
+        this.mStartPopStackWindowStatus = false;
+    }
     
     #endregion
 }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -31,6 +32,16 @@ public abstract class WindowBehaviour
     /// 窗口是否可见。
     /// </summary>
     public bool Visible { get; protected set; }
+
+    /// <summary>
+    /// 堆栈弹出弹出回调
+    /// </summary>
+    public Action<WindowBase> PopStackListener { get; set; }
+
+    /// <summary>
+    /// 是否通过堆栈系统弹出的弹窗
+    /// </summary>
+    public bool PopStack { get; set; }
 
     /// <summary>
     /// 当 GameObject 创建时调用，仅执行一次。

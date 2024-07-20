@@ -23,7 +23,14 @@ public class WindowBase : WindowBehaviour
     /// </summary>
     private List<InputField> mAllInputFieldList = new List<InputField>();
 
+    /// <summary>
+    /// 遮罩节点
+    /// </summary>
     private CanvasGroup mUIMask;
+    
+    /// <summary>
+    /// 界面内容节点
+    /// </summary>
     protected Transform mUIContent;
 
     /// <summary>
