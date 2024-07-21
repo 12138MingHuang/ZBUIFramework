@@ -68,6 +68,43 @@ public class UIModule : Singleton<UIModule>
     #region 窗口管理
 
     /// <summary>
+    /// 预加载接口，只加载物体，不调用生命周期
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public void PreLoadWindow<T>() where T : WindowBase, new()
+    {
+        // 获取窗口类型
+        Type type = typeof(T);
+        // 获取窗口名称
+        string windowName = type.Name;
+        T newWindow = new T();
+        
+        // 生成对应的窗口预制体
+        GameObject goWindow = this.TempLoadWindow(windowName);
+        if (goWindow != null)
+        {
+            newWindow.gameObject = goWindow;
+            newWindow.transform = goWindow.transform;
+            newWindow.transform.SetAsLastSibling();
+            newWindow.Canvas = goWindow.GetComponent<Canvas>();
+            newWindow.Canvas.worldCamera = this.mUICamera;
+            newWindow.Name = goWindow.name;
+            newWindow.OnAwake();
+            newWindow.SetVisible(false);
+            // 设置窗口的 RectTransform 属性
+            RectTransform rectTrans = goWindow.GetComponent<RectTransform>();
+            rectTrans.anchorMax = Vector2.one;
+            rectTrans.offsetMax = Vector2.zero;
+            rectTrans.offsetMin = Vector2.zero;
+
+            // 将窗口添加到管理列表
+            this.mAllWindowDic.Add(windowName, newWindow);
+            this.mAllWindowList.Add(newWindow);
+        }
+        Debug.Log("预加载窗口：" + windowName);
+    }
+    
+    /// <summary>
     /// 弹出窗口，如果窗口已存在则显示，否则初始化并显示。
     /// </summary>
     /// <typeparam name="T">窗口类型，必须继承自 WindowBase。</typeparam>
@@ -321,9 +358,9 @@ public class UIModule : Singleton<UIModule>
 
             // 设置窗口的 RectTransform 属性
             RectTransform rectTrans = goWindow.GetComponent<RectTransform>();
-            rectTrans.anchorMax = Vector3.one;
-            rectTrans.offsetMax = Vector3.zero;
-            rectTrans.offsetMin = Vector3.zero;
+            rectTrans.anchorMax = Vector2.one;
+            rectTrans.offsetMax = Vector2.zero;
+            rectTrans.offsetMin = Vector2.zero;
 
             // 将窗口添加到管理列表
             this.mAllWindowDic.Add(windowName, windowBase);

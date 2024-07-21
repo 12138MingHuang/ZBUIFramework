@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,6 +10,15 @@ public class ZMUIMain : MonoBehaviour
         UIModule.Instance.Initialize();
         LoginWindow loginWindow = UIModule.Instance.PopUpWindow<LoginWindow>();
     }
+
+    private void Start()
+    {
+        UIModule.Instance.PreLoadWindow<HallWindow>();
+        UIModule.Instance.PreLoadWindow<UserInfoWindow>();
+        UIModule.Instance.PreLoadWindow<SettingWindow>();
+        UIModule.Instance.PreLoadWindow<ChatWindow>();
+    }
+
     private void Update()
     {
 
