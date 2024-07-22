@@ -38,6 +38,12 @@ public class WindowBase : WindowBehaviour
     /// 是否禁用动画。
     /// </summary>
     protected bool mDisableAnimation = false;
+    
+    /// <summary>
+    /// CanvasGroup组件
+    /// </summary>
+    private CanvasGroup mCanvasGroup;
+
 
 
     /// <summary>
@@ -45,6 +51,7 @@ public class WindowBase : WindowBehaviour
     /// </summary>
     private void InitializeBaseComponent()
     {
+        this.mCanvasGroup = transform.GetComponent<CanvasGroup>();
         this.mUIMask = transform.Find("UIMask").GetComponent<CanvasGroup>();
         this.mUIContent = transform.Find("UIContent").transform;
     }
@@ -118,8 +125,10 @@ public class WindowBase : WindowBehaviour
     public override void SetVisible(bool isVisible)
     {
         base.SetVisible(isVisible);
-        // FIXME 临时代码
-        this.gameObject.SetActive(isVisible);
+        // // FIXME 临时代码
+        // this.gameObject.SetActive(isVisible);
+        this.mCanvasGroup.alpha = isVisible ? 1 : 0;
+        this.mCanvasGroup.blocksRaycasts = isVisible;
         this.Visible = isVisible;
     }
 

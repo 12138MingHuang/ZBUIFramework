@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 3024884847303065862}
   - component: {fileID: 7832424997416938103}
   - component: {fileID: 8723403430992285989}
+  - component: {fileID: 2153503436047542967}
   m_Layer: 5
   m_Name: TempWindow3
   m_TagString: Untagged
@@ -223,6 +224,18 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!225 &2153503436047542967
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1717033451338515520}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &5475006544911989081
 GameObject:
   m_ObjectHideFlags: 0

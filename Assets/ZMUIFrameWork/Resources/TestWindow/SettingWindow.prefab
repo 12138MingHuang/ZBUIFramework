@@ -92,6 +92,7 @@ GameObject:
   - component: {fileID: 1084188284056266841}
   - component: {fileID: 8955851612941229223}
   - component: {fileID: 6043325645412043813}
+  - component: {fileID: 3825219786459658402}
   m_Layer: 5
   m_Name: SettingWindow
   m_TagString: Untagged
@@ -196,6 +197,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CloseButton: {fileID: 39992355670343468}
+--- !u!225 &3825219786459658402
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1277111937418313854}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &4203806326507685533
 GameObject:
   m_ObjectHideFlags: 0

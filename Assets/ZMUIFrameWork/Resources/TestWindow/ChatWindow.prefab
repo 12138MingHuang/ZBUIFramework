@@ -413,6 +413,7 @@ GameObject:
   - component: {fileID: 1059128348765370070}
   - component: {fileID: 2114382608746049779}
   - component: {fileID: 2949007721038371148}
+  - component: {fileID: 3856448914155476340}
   m_Layer: 5
   m_Name: ChatWindow
   m_TagString: Untagged
@@ -517,3 +518,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CloseButton: {fileID: 943291184104347902}
+--- !u!225 &3856448914155476340
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4470935891114414155}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0

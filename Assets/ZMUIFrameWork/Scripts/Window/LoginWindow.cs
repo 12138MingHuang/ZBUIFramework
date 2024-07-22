@@ -23,6 +23,11 @@ public class LoginWindow : WindowBase
 		dataCompt = gameObject.GetComponent<LoginWindowDataComponent>();
 		dataCompt.InitComponent(this);
 	}
+	//当界面显示时调用。
+	public override void OnShow()
+	{
+		base.OnShow();
+	}
 	//当界面隐藏时调用。
 	public override void OnHide()
 	{

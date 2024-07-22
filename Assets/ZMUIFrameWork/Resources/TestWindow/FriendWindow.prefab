@@ -413,6 +413,7 @@ GameObject:
   - component: {fileID: 3963913867711673422}
   - component: {fileID: 3570574804225890737}
   - component: {fileID: 4885803945437417598}
+  - component: {fileID: 6802888835039125500}
   m_Layer: 5
   m_Name: FriendWindow
   m_TagString: Untagged
@@ -517,3 +518,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CloseButton: {fileID: 228238318341907729}
+--- !u!225 &6802888835039125500
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7032454264110839114}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0

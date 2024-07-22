@@ -97,6 +97,13 @@ public class GeneratorWindowTool : Editor
         }
 
         sb.AppendLine("\t}");
+        
+        //生成OnShow
+        sb.AppendLine("\t//当界面显示时调用。");
+        sb.AppendLine("\tpublic override void OnShow()");
+        sb.AppendLine("\t{");
+        sb.AppendLine("\t\tbase.OnShow();");
+        sb.AppendLine("\t}");
 
         //生成OnHide
         sb.AppendLine("\t//当界面隐藏时调用。");

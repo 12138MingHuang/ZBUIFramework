@@ -410,6 +410,7 @@ GameObject:
   - component: {fileID: 155771651837429893}
   - component: {fileID: 8848732962699740227}
   - component: {fileID: 89910766496380612}
+  - component: {fileID: 2564451389931711279}
   m_Layer: 5
   m_Name: HallWindow
   m_TagString: Untagged
@@ -517,6 +518,18 @@ MonoBehaviour:
   SettingButton: {fileID: 8128893939861082342}
   HomeButton: {fileID: 7094291395551275814}
   FriendButton: {fileID: 6951836550473345085}
+--- !u!225 &2564451389931711279
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2729729177919348679}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &3098817040975378649
 GameObject:
   m_ObjectHideFlags: 0

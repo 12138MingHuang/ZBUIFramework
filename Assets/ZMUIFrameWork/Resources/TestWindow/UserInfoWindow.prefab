@@ -526,6 +526,7 @@ GameObject:
   - component: {fileID: 7949881504898418225}
   - component: {fileID: 8483064465450769155}
   - component: {fileID: 6324752292174609077}
+  - component: {fileID: 3500864587108541722}
   m_Layer: 5
   m_Name: UserInfoWindow
   m_TagString: Untagged
@@ -631,6 +632,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CloseButton: {fileID: 5490916733609105683}
   FriendButton: {fileID: 4911310076153532669}
+--- !u!225 &3500864587108541722
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8192963475143937935}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &8468960808584372684
 GameObject:
   m_ObjectHideFlags: 0

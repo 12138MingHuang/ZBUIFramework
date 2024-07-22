@@ -453,6 +453,7 @@ GameObject:
   - component: {fileID: 2411701066819587403}
   - component: {fileID: 4964675639176262357}
   - component: {fileID: 8358206756441629426}
+  - component: {fileID: 2478722767530718097}
   m_Layer: 5
   m_Name: LoginWindow
   m_TagString: Untagged
@@ -557,6 +558,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LoginButton: {fileID: 8759206787050380134}
+--- !u!225 &2478722767530718097
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5695842940753446813}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &7163295321262824190
 GameObject:
   m_ObjectHideFlags: 0

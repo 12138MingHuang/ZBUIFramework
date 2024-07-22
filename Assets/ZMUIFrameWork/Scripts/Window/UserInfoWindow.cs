@@ -23,6 +23,17 @@ public class UserInfoWindow : WindowBase
 		dataCompt = gameObject.GetComponent<UserInfoWindowDataComponent>();
 		dataCompt.InitComponent(this);
 	}
+	//当界面显示时调用。
+	public override void OnShow()
+	{
+		base.OnShow();
+		//测试网格重绘
+		dataCompt.FriendButton.SetVisible(false);
+		dataCompt.CloseButton.gameObject.SetActive(false);
+		
+		dataCompt.FriendButton.SetVisible(true);
+		dataCompt.CloseButton.gameObject.SetActive(true);
+	}
 	//当界面隐藏时调用。
 	public override void OnHide()
 	{
