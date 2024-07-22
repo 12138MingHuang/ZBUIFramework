@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class CanvasRebuildTest : MonoBehaviour
 {
     private IList<ICanvasElement> mLayoutRebuildQueue;
-    IList<ICanvasElement> mGraphicRebuildQueue;
+    private IList<ICanvasElement> mGraphicRebuildQueue;
 
     void Start()
     {
